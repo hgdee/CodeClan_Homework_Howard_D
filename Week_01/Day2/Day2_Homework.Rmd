@@ -1,0 +1,117 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(CodeClanData)
+```
+
+Q1
+```{r}
+drinks_content
+```
+
+```{r}
+ncol(drinks_content)
+```
+```{r}
+ncol(drinks_content)
+```
+```{r}
+names(drinks_content)
+```
+```{r}
+summary((drinks_content))
+```
+
+Q2  
+
+```{r}
+drinks_content %>% filter(!is.na(Calories))  %>%   select(Beverage,Beverage_category,Beverage_prep, Calories)
+
+
+```
+Q3
+
+```{r}
+
+mutate(drinks_content, calorie_diff = (Calories - 135) )
+```
+Q4
+
+```{r}
+mean_calories <- drinks_content %>% group_by(Beverage_category) %>% arrange(Calories) %>% select(Calories, Beverage_category, Beverage,Beverage_prep)
+mean_calories
+```
+
+```{r}
+head(mean_calories,3)
+```
+
+
+
+```{r}
+mean_calories <- drinks_content %>% group_by(Beverage_category) %>% arrange(desc(Calories))    %>% select(Calories, Beverage_prep, Beverage,Beverage_category)
+mean_calories
+```
+
+
+
+
+The group_by is not doing what I want as I expected it to roll up the data by beverage_category. I was thinking we should see only one category and its total.
+
+Three categories with the most calories are : 	Signature Espresso Drinks, Frappuccino® Blended Coffee, Frappuccino® Blended Coffee.
+
+The minimum calorie drinks are: Tazo Tea Drinks (short, tall, grande)
+
+Q5
+
+Had problems with the rollup of data as above so wasn't getting the mean per catgory and tried it by hand,
+
+
+
+```{r}
+mean_calories <- drinks_content %>% group_by(Beverage_prep) %>% filter(Beverage_prep == "Grande") %>% select(Calories, Beverage_prep, Beverage,Beverage_category) 
+mean_calories
+
+
+```
+```{r}
+mean_calories <- drinks_content %>% group_by(Beverage_prep) %>% filter(Beverage_prep == "Tall") %>% select(Calories, Beverage_prep, Beverage,Beverage_category)  
+mean_calories
+```
+
+
+```{r}
+mean_calories <- drinks_content %>% group_by(Beverage_prep) %>% filter(Beverage_prep == "2% Milk") %>% select(Calories, Beverage_prep, Beverage,Beverage_category)  
+mean_calories
+```
+
+etc. etc.etc.
+
+Q6
+
+```{r}
+mutate(drinks_content, avg_cal = mean(Calories))  %>% head(1) %>% select(avg_cal)
+
+```
+
+510	2% Milk	White Chocolate Mocha (Without Whipped Cream)
+
+
+```{r}
+
+drinks_content  %>% select(Calories) %>% max()
+```
+
+
+Q7.
+
+	Brewed Coffee	Short = 3 cals (as above)
+```{r}
+	drinks_content  %>% filter(Beverage_category == "Coffee" ) %>% filter( Calories == min(Calories)  )
+```
+	
+
+	
