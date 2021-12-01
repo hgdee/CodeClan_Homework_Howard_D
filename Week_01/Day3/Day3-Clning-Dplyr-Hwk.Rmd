@@ -1,0 +1,215 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Load the Libraries
+```{r}
+library(tidyverse)
+```
+
+# Day3 Cleaning & Extra dplyr Homework
+
+
+
+# MVP
+
+# Load the data. Only 1 hearr line so no need to skip
+```{r}
+movie_data <- read_csv("data/movies.csv")
+```
+```{r}
+movie_data
+```
+
+```{r}
+head(movie_data,1)
+```
+
+```{r}
+names(movie_data)
+```
+
+#  Q1 After you’ve read in the data and assigned it to a variable with a # useful name, investigate it. Write down some ideas for what you could do to further investigate/clean this data using what you’ve learned today (no need to code it though, just jot down thoughts and ideas). Feel free to also write down any general thoughts you get looking at the data - this task is just to get you thinking about data and data cleaning/prepping.
+
+Q1 Thoughts
+
+Immediate thoughts are that because there are large text chunks, like Overview, (needed?) it makes it hard to read - so headed it. Budget values then converted into powers so could be better presented. As its not clear who the audience is I would perhaps reorder the data so that columns that are most pertinent are to the left and would probably order by budget.
+
+Column_names don't have spaces so we don't need janitor
+
+
+# Perhaps a no-no but if we are interested in the data we don't need overview # so would ditch it here and reorder the columns.
+
+```{r}
+movie_data_reduced <- movie_data %>% select(title, tagline, budget,  revenue, popularity, release_date, vote_average, vote_count, runtime, homepage)
+  arrange(movie_data_reduced,revenue)
+
+```
+
+There are 0's for budget and revenue. These should be considered as NA I assume.  Will clean/wrangle these later.
+
+General data outlook
+
+
+```{r}
+dim(movie_data_reduced)
+```
+Its a big set so I assume we could lose the 'null' - 0 values - values and assume the stats would be unaffected.
+
+```{r}
+movie_data_nulls_removed <- filter(movie_data_reduced, revenue > 0 & budget > 0 )
+movie_data_ready <-  arrange(movie_data_nulls_removed,revenue)
+movie_data_ready
+```
+```{r}
+summary(movie_data_ready)
+```
+
+
+#############################################
+
+Q2 A lot of interesting stuff in there! But for now, we are only interested in the movies’ titles, their runtime as well as their budget. Select the three columns that contain this information and save them into a new variable called movies_selected. Hint: you will have to make a choice between original_title and title.
+
+
+Chose title as assumed logic would dictate it could not be null and it would be most recent
+
+```{r}
+movies_selected <- movie_data %>%
+                    select(title, budget, runtime) %>%
+                    arrange(budget)
+movies_selected
+```
+
+#################################
+Q3 Ok, now take your subsetted data movies_selected, and count the number of missing values in each column.
+###############################
+
+```{r}
+      filter(movies_selected, budget == 0 | is.na(title) | runtime == 0)
+
+
+```
+
+```{r}
+filter(movies_selected, budget == 0 ) %>% count(n()) %>% pull()
+```
+```{r}
+filter(movies_selected, runtime == 0 ) %>% count(n()) %>% pull()
+```
+
+```{r}
+filter(movies_selected, is.na(title))
+```
+################
+Q4  There’s not too many NAs, but there are actually quite a few movies with a runtime of 0 in this dataset. Since it’s impossible for a movie to have a runtime of 0, use the function na_if to convert runtimes of length 0 into NAs. Save this into a new variable called movies_runtime. Then count how many missing values there are now in the column runtime.
+
+
+################
+
+```{r}
+movies_runtime <- movies_selected %>%
+                  mutate(runtime = na_if(runtime, 0)) 
+
+runtime_null_count <- filter(movies_runtime, is.na(runtime)) %>%
+                         count(n()) %>% pull()
+runtime_null_count
+                             
+                                 
+```
+
+#########################
+Q5  Impute the missing values in runtime with the median runtime using coalesce and save this into a new variable called movies_imputed. There should now be no missing values in the column runtime - check this to make sure.
+#########################
+
+
+
+```{r}
+movies_runtime_correct <- movies_runtime %>%
+        mutate(runtime = coalesce(runtime, median(runtime,na.rm = TRUE)))
+movies_runtime_correct
+```
+```{r}
+runtime_null_count <- filter(movies_runtime_correct, is.na(runtime)) %>%
+                         count(n()) %>% pull()
+runtime_null_count
+```
+```{r}
+movies_imputed <- movies_runtime_correct
+movies_imputed
+```
+
+It work|! It work!
+
+##############
+Q6  Finally, use the slice_min and slice_max functions on movies_imputed to get the movies with the 10 shortest and 10 longest runtimes.
+#############
+
+Used the wrong var name above
+```{r}
+
+ movies_imputed %>%  
+      slice_max(runtime, n = 10)
+```
+```{r}
+ movies_imputed %>%  
+      slice_min(runtime, n = 10)
+```
+####################
+Q7 Using the if_else function, impute anything with a budget below $100 with the median budget. Overwrite your movies_imputed so it contains the new budget values.
+###################
+
+                                              
+```{r}
+movies_imputed <- movies_imputed %>%
+                mutate(budget = 
+                         if_else( budget > 100,
+                                         budget ,
+                                         median(budget) )
+                             ) %>%
+                  arrange(budget)
+movies_imputed
+
+```
+###############
+Extension
+###############
+
+
+############
+
+Q1 Using case_when, create a new column called budget_type and label budgets as follows:
+
+Budgets below 12 million as ‘Small budget’
+Budgets between 12 and 40 million as ‘Medium budget’
+Budgets 40 millions and above as ‘Big budget’
+Save this into a new variable called movie_budgets.
+############
+
+
+```{r}
+
+movie_budgets <- movies_imputed %>% mutate(budget = case_when(
+                             budget < 12000000 ~ "small budget",
+                             budget >= 12000000 
+                                & budget < 40000000~ "medium budget",
+                             budget >= 40000000 
+                                ~ "big budget",
+                             TRUE ~ "unknown budget"))  %>%
+                    select (title,budget)
+
+movie_budgets
+
+```
+
+
+################
+Q2  Take the original dataset with all the variables. Using across and where, summarise the number of missing values, first across all columns of type character, and then across all columns of type numeric.
+################
+
+```{r}
+movie_data  %>% summarise( across(where(is.na()),"NA"))
+```
+
+
+
