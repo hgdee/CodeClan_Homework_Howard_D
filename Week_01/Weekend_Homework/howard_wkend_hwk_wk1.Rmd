@@ -1,0 +1,33 @@
+---
+title: "`dplyr` Weekend Homework"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    css: ../../../styles.css
+  pdf_document: default
+---
+
+```{r}
+library(tidyverse)
+```
+Not worried about the conflicts
+
+Try out a long fileath name to see hopw read_cvs copes
+
+
+
+```{r}
+book_ratings <- read_csv("c:/users/howard/documents/GitHub/CodeClan/d12_classnotes/week_01/day_5/2_weekend_homework/data/books.csv")
+book_ratings
+```
+
+```{r}
+glimpse(book_ratings)
+```
+
+```{r}
+book_ratings %>% summarise(across(.cols=everything(),.fns = ~ sum(is.na(.x))))
+```
+
