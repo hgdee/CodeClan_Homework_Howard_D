@@ -220,4 +220,7 @@ Use `str_extract_all()` with a regular expression to find out which Twitter user
 <summary>**Hint**</summary>
 Think about all the different characters which could be in a Twitter username, do a bit of online research
 </details>
+```{r}
+getwd()
+```
 
