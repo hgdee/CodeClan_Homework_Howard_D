@@ -1,0 +1,168 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Homework Week2 Day3 Programming in R Homework
+
+Load up the libraries
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(stringr)
+library(dplyr)
+```
+
+
+# Question 1.
+Find the weather forecast for the next three days online. Create a list of lists in which each inner list should be labelled with the name of the day of the week. Each inner list should contain named elements telling you the temperature, chance of rain and wind speed.
+
+
+
+```{r}
+thurs_weather <-   list("Thursday", "Light rain","Gentle breeze",6)
+fri_weather   <-   list("Friday", "No rain","Gentle breeze",5)
+sat_weather   <-   list("Saturday","Light rain","Gentle breeze",8)
+all_weather   <-   list(thurs_weather, fri_weather, sat_weather)
+class(all_weather)
+
+```
+
+
+
+# Question 2.
+Using the list you’ve just made find:
+
+The chance of rain tomorrow
+The wind speed on the day after tomorrow
+The temperature tomorrow.
+
+i)
+```{r}
+
+all_weather[[1]][2]
+```
+
+ii)
+```{r}
+all_weather[[2]][3]
+```
+iii)
+```{r}
+all_weather[[1]][4]
+```
+
+# Question 3.
+Find a 14 day forecast online and create a matrix of the forecasts for temperature, where each week is one row and columns correspond to days.
+
+You will want to give a name to the matrix you create.
+
+```{r}
+fourteen_day_forecast <- matrix(nrow = 2, ncol = 8)
+class(fourteen_day_forecast)
+fourteen_day_forecast
+```
+```{r}
+week1 <- c("Week1",6,6,9,11,8,10,11)
+week2 <- c("Week2",12,10,9,9,8,8,7)
+
+week_num_1 <- 1
+week_num_2 <- 2
+for(i in 1:length(week1)) {
+   
+    fourteen_day_forecast[week_num_1,i] <- week1[i]
+    fourteen_day_forecast[week_num_2,i] <- week2[i]
+ 
+}
+
+ fourteen_day_forecast[1,]
+ fourteen_day_forecast[2,]
+```
+
+# Question 4.
+From the matrix you just made select:
+
+The third day of the second week
+The whole second week
+The first, third and fifth days in both weeks.
+
+#######################################################################
+# Days are after the WEEK description so 'day' index is increased  ####
+#######################################################################
+```{r}
+fourteen_day_forecast[2,4]
+
+fourteen_day_forecast[2,]
+
+fourteen_day_forecast[1,2]
+fourteen_day_forecast[1,4]
+fourteen_day_forecast[1,6]
+fourteen_day_forecast[2,2]
+fourteen_day_forecast[2,4]
+fourteen_day_forecast[2,6]
+```
+
+# Question 5.
+Write a function that pre-appends “The answer is:” to any character input, while for numeric input, it either just returns the number for numbers less than 10, or divides the number by 10 for numbers greater than 10. For anything else return “Invalid input”.
+
+
+
+```{r}
+advise_or_divide <- function(input = NULL){
+
+   
+   # Code is more concentrated than I would like
+   # but had problems with ifelse brackets
+
+   check_val <- is.character(input)
+ 
+   ifelse((check_val == TRUE), 
+         return(return_val <- sprintf("The answer is: %s",input)),
+   check_val <- is.numeric(input))
+    
+   ifelse((check_val == TRUE),
+          do_sums <- TRUE, 
+   return("Invalid input") )
+   
+   ifelse ((do_sums == TRUE) & (input >= 10), 
+          return ((input / 10)), 
+           return(input))
+   
+  
+}
+advise_or_divide("wine")
+advise_or_divide(9)
+advise_or_divide(20)
+advise_or_divide()
+
+```
+
+
+# Question 6.
+Write a function which checks if two vectors have the same elements.
+
+If they have the same elements in the same order, return “Exactly the same”
+If they have the same elements but in a different order, return “The same”
+If they don’t have the same elements, return “Different”.
+
+```{r}
+
+
+comp_vectors <- function(vector1, vector2){
+  
+   len_1 <-  length(vector1)
+   len_2 <-  length(vector2)
+
+   ifelse((len_1 != len_2),return("Different"), sprintf("checking vectors\n"))
+   
+   # two vectors of the same length
+   for (i in 1:len_1) {
+     
+      ifelse(vector1[i] == vector2[i],
+   }
+
+}
+
+```
+
