@@ -95,9 +95,11 @@ Find the first_name, last_name and salary of the lowest paid employee in Hungary
 SELECT first_name, 
        last_name,
        salary
-FROM employees e  
+FROM  employees e  
 WHERE e.salary = (SELECT min(e2.salary) 
-                  FROM employees e2)
+                  FROM employees e2 
+                  WHERE country = 'Hungary')
+AND   country = 'Hungary';
                   
 /*
  How many employees have a first_name beginning with ‘F’?
@@ -189,3 +191,5 @@ SELECT first_name,
              WHEN salary  >= 40000 THEN  'high'  
        END AS salary_class
 FROM employees e ;
+
+
