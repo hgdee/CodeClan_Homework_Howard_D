@@ -243,22 +243,12 @@ If you could convert BOOLEAN to INTEGER 1 and 0, you could sum them. The CAST() 
 
 In SQL, an INTEGER divided by an INTEGER yields an INTEGER. To get a REAL value, you need to convert the top, bottom or both sides of the division to REAL.
  */
- SELECT 
-    department,
-    grade,
-    count(*)
-FROM employees e 
-GROUP BY department, grade;
 
-SELECT min(grade) FROM employees e ;
-SELECT DISTINCT grade FROM employees e ;
 
 SELECT
-    first_name,
-    last_name,
-    department,
-    grade,
-    sum(CASE WHEN grade IS null THEN 9 END ) OVER (PARTITION BY department) AS grade_tots
+    DISTINCT (department),
+    CAST( count( CASE WHEN grade = 1 THEN 1 END ) OVER (PARTITION BY department)  -
+      count( COALESCE (grade,0)) OVER (PARTITION BY department) AS float ) / (count( COALESCE (grade,0)) OVER (PARTITION BY department)) * 100 +100 AS g1_percent
 FROM  employees
 ; 
 
