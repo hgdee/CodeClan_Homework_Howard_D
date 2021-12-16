@@ -248,7 +248,7 @@ In SQL, an INTEGER divided by an INTEGER yields an INTEGER. To get a REAL value,
 SELECT
     DISTINCT (department),
     CAST( count( CASE WHEN grade = 1 THEN 1 END ) OVER (PARTITION BY department)  -
-      count( COALESCE (grade,0)) OVER (PARTITION BY department) AS float ) / (count( COALESCE (grade,0)) OVER (PARTITION BY department)) * 100 +100 AS g1_percent
+      count( COALESCE (grade,0)) OVER (PARTITION BY department) AS float ) / (count( COALESCE (grade,0)) OVER (PARTITION BY department)) * 100 +100  AS g1_percent
 FROM  employees
 ; 
 
