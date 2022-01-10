@@ -1,0 +1,103 @@
+---
+title: "wk5_d1_hw_howard.Rmd"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    df_print: paged
+    toc_float: yes
+---
+
+```{r}
+library(tidyverse)
+library(CodeClanData)
+library(janitor)
+
+```
+# Advanced ggplot2 Homework
+
+## 2.1 Question 1.
+
+Take the data in the dataset qb_revenue_breakdown and make a stacked bar chart showing the sources of revenue across the two years in the dataset.
+
+```{r}
+qb_revenue_breakdown %>%
+  clean_names()  %>%
+  ggplot() +
+  geom_bar(aes(x = product, fill = year))  +
+  scale_fill_manual(
+    values = c(
+      "2018" = "red",
+      "2019" = "orange"
+    ))
+```
+
+## Questino 2.
+
+Make a line chart showing monthly sales of the “flagship product” - the ‘KwikBit Unit 1’ - over the last year. This data is inside qb_monthly_sales, but you will need to use filter() or subset() (base R).
+
+```{r}
+
+qb_monthly_sales %>%
+  clean_names()  %>%
+  filter(cashflow == "Kwikbit Unit 1 Sales") %>%
+  ggplot() +
+  geom_line(aes(x = date, y = amount )) +
+  labs(
+    x        = "\nSales",
+    y        = "Date",
+    title    = "Kwikbit Unit 1 Sales",
+    subtitle = "Units in £\n"
+  )
+```
+
+## Question 3.
+
+Make a line chart showing monthly revenue and costs over the last year. This data is also in qb_monthly_sales.
+
+
+
+```{r}
+qb_monthly_sales %>%
+  clean_names()  %>%
+  filter(cashflow %in% c("Total Revenue", "Cost") ) %>%
+  filter(date >= "2019-01-01")  %>%
+  ggplot() +
+  aes(date,amount,colour = cashflow) +
+  geom_line() 
+```
+## Question 4.
+
+Show annual sales of personal fitness trackers over the last 5 years broken down by company as a ribbon plot (use geom_area). This data is in qb_competitors.
+
+```{r}
+qb_competitors %>%
+  clean_names()  %>%
+  group_by(company, year)  %>%
+  ggplot() +
+  aes(year,revenue,colour = company, fill = company) +
+  geom_area() +
+  scale_fill_manual(
+    values = c(
+      "Competitor 1" = "red",
+      "Competitor 2" = "yellow",
+      "Competitor 3" = "blue",
+      "Competitor 4" = "green"
+    )) +
+   scale_y_continuous(labels = scales::comma) 
+```
+
+## Question 5.
+
+Now show the sales from the four competitors as a line graph. Include an extra layer that shows the data points used to make the lines.
+
+```{r}
+qb_competitors %>%
+  clean_names()  %>%
+  group_by(company, year)  %>%
+  ggplot() +
+  aes(year,revenue,colour = company) +
+  geom_point(   alpha = 0.5 ) +
+  geom_smooth()
+```
+
