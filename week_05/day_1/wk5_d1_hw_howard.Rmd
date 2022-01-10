@@ -23,13 +23,21 @@ Take the data in the dataset qb_revenue_breakdown and make a stacked bar chart s
 ```{r}
 qb_revenue_breakdown %>%
   clean_names()  %>%
-  ggplot() +
-  geom_bar(aes(x = product, fill = year))  +
+  ggplot(aes(x = product, y = revenue, fill = year)) +
+  geom_bar(position = "stack", stat = "identity") +
   scale_fill_manual(
     values = c(
-      "2018" = "red",
-      "2019" = "orange"
-    ))
+      "2018" = "#B6A7B5",
+      "2019" = "#BD7040"
+    )) +
+   labs(
+    x        = "\nProduct",
+    y        = "Revenue",
+    title    = "Revenue sources",
+    subtitle = "Units in £\n",
+    size = 12
+  ) +
+  theme(plot.title = element_text(size=14))
 ```
 
 ## Questino 2.
@@ -47,8 +55,10 @@ qb_monthly_sales %>%
     x        = "\nSales",
     y        = "Date",
     title    = "Kwikbit Unit 1 Sales",
-    subtitle = "Units in £\n"
-  )
+    subtitle = "Units in £\n",
+    size = 12
+  ) +
+  theme(plot.title = element_text(size=14))
 ```
 
 ## Question 3.
@@ -64,7 +74,15 @@ qb_monthly_sales %>%
   filter(date >= "2019-01-01")  %>%
   ggplot() +
   aes(date,amount,colour = cashflow) +
-  geom_line() 
+  geom_line()  +
+  labs(
+    x        = "\nMonth",
+    y        = "Amount",
+    title    = "Cashflow/Revenue by month",
+    subtitle = "Units in £\n",
+    size     =  12
+  ) +
+  theme(plot.title = element_text(size=14))
 ```
 ## Question 4.
 
@@ -79,12 +97,20 @@ qb_competitors %>%
   geom_area() +
   scale_fill_manual(
     values = c(
-      "Competitor 1" = "red",
-      "Competitor 2" = "yellow",
-      "Competitor 3" = "blue",
-      "Competitor 4" = "green"
+      "Competitor 1" = "#E89FE9",
+      "Competitor 2" = "#50434F",
+      "Competitor 3" = "#B6A7B5",
+      "Competitor 4" = "#F9A472"
     )) +
-   scale_y_continuous(labels = scales::comma) 
+   scale_y_continuous(labels = scales::comma) +
+   labs(
+    x        = "\nYear",
+    y        = "Amount",
+    title    = "Competitor Sales",
+    subtitle = "Data for personal trackers\n",
+    size     =  12
+  ) +
+  theme(plot.title = element_text(size=14))
 ```
 
 ## Question 5.
@@ -98,6 +124,40 @@ qb_competitors %>%
   ggplot() +
   aes(year,revenue,colour = company) +
   geom_point(   alpha = 0.5 ) +
-  geom_smooth()
+  geom_smooth() +
+   scale_y_continuous(labels = scales::comma) +
+   labs(
+    x        = "\nYear",
+    y        = "Revenue",
+    title    = "Competitor Sales",
+    subtitle = "Revenue expressed in £\n",
+    size     =  12
+  ) +
+  theme(plot.title = element_text(size=14))
+```
+
+## Question 6.
+
+Now the company wants to compare the number of steps that their device counts vs. their competitors. Make a line graph of the number of steps throughout time, and use faceting to compare between companies and people. The data for this is in qb_device_data.
+
+```{r}
+qb_device_data 
+
+# Sorry - can't see other companies or steps so I'll pass on this one
+```
+## Question 2.2.1
+
+Take the plots that you produced in part one and now polish them by:
+
+Adding appropriate labels
+Changing the scales and coordinates when appropriate.
+Applying a unified theme, which is described below:
+Graphs should have white backgrounds, and use colour sparingly.
+There should be faint grid lines.
+Font sizes should be ~12pt although titles should be slightly larger and axis labels can be slightly smaller.
+All plots should use colours from the following company colour scheme.
+
+```{r}
+# I've done this in situ
 ```
 
