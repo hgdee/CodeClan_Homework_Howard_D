@@ -1,0 +1,249 @@
+---
+title: "wk5_d2_hw_howard.Rmd"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    df_print: paged
+    toc_float: yes
+---
+
+```{r}
+library(tidyverse)
+library(CodeClanData)
+library(janitor)
+library(viridis)
+library(plotly)
+```
+# ggplot2 homework
+
+## Question 1.
+
+Load in the libraries you need, and look at the backpack data. Take note of variable names and dimensions.
+
+```{r}
+glimpse(backpack)
+summary(backpack)
+```
+There are three factors and quantative data such as backpack_weight and body_weight as well as categorical data like gender.
+
+
+## Question 2.
+
+What is the distribution of backpack weights that students are carrying? Choose an appropriate graph to show the distribution.
+
+```{r}
+hwk_theme <-  theme(title = element_text(size = 14),
+                    text  = element_text(size = 12))
+
+backpack %>%
+  clean_names() %>%
+  ggplot(aes(x = body_weight))  +
+  geom_histogram(bins = 20, col = "white", fill = "red") +
+  labs(
+    x        = "\nBodyweight",
+    y        = "Count",
+    title    = "Bodyweight distribution of students with backpacks",
+    subtitle = "Weight expressed in lbs\n"
+  ) +
+  hwk_theme 
+  
+```
+
+The weights are fairly concentrated with few outliers and a mean of 153.1 and 1st and 3rd quartile values of 130 and 170.  These values would fall within general expectations of young students.
+
+## Question 3.
+
+Are there differences in backpack weight between sex?
+
+```{r}
+
+backpack %>%
+  clean_names()  %>%
+  ggplot(aes(x = sex, y = backpack_weight, color = backpack_weight)) +
+  geom_col() +
+    labs(
+    x        = "\nSex",
+    y        = "Backpack Weight",
+    title    = "Backpack weight versus sex for students",
+    subtitle = "Weight expressed in lbs\n"
+  ) +
+  hwk_theme 
+  
+
+```
+
+These data would be  surprising as males tend to be larger and, therefore, it would be expected that they could and would carry more. In fact the females carry marginally more and, taking into account their lower body weight this requires more effort. There were more female respondents than male and when the mean is calculated, below, this conflicts with the grand total expressed in the graph. The graph is, therefore, misleading
+
+```{r}
+backpack %>% 
+  filter(!is.na(sex) & !is.na(backpack_weight)) %>% 
+  select(sex, backpack_weight) %>%
+  group_by(sex) %>%
+  summarise(backpack_weight_mean = mean(backpack_weight))
+```
+
+
+## Question 4.
+
+What is the relationship between body weight and backpack weight?
+```{r}
+backpack %>%
+  clean_names()  %>%
+  ggplot(aes(x = body_weight, y = backpack_weight, color = backpack_weight)) +
+  geom_line() +
+  geom_smooth() +
+    labs(
+    x        = "\nBody weight",
+    y        = "Backpack Weight",
+    title    = "Backpack weight versus body weight for student backpacks",
+    subtitle = "Weight expressed in lbs\n"
+  ) +
+  hwk_theme 
+```
+
+These data are within perceived expectations as, though we can't tell whether high body weights are obesity or muscle, general expectations would be that the small and overweight would choose lower backpack weights as it would require less energy. Optimum bodyweights tend to carry larger backpacks.
+
+
+##  Question 5.
+
+Is this relationship different between men and women? Choose an appropriate plot and interpret your findings.
+```{r}
+backpack %>%
+  clean_names()  %>%
+  filter(!is.na(sex) & !is.na(backpack_weight) & !is.na(body_weight)) %>% 
+  select(sex, backpack_weight, body_weight) %>%
+  group_by(sex) %>%
+  summarise(backpack_weight_mean = mean(backpack_weight), 
+            body_weight_mean = mean(body_weight)) 
+```
+
+```{r}
+backpack %>%
+  clean_names()  %>%
+  filter(!is.na(sex) & !is.na(backpack_weight) & !is.na(body_weight)) %>% 
+  select(sex, backpack_weight, body_weight) %>%
+  group_by(sex) %>%
+  summarise(backpack_weight_mean = mean(backpack_weight), 
+            body_weight_mean = mean(body_weight))  %>%
+  ggplot(aes(x = body_weight_mean, y = backpack_weight_mean, fill = sex)) +
+  geom_col( width = 4) +
+    labs(
+    x        = "\nBody weight mean",
+    y        = "Backpack weight mean",
+    title    = "Backpack weight versus body weight means for student backpacks",
+    subtitle = "Weight expressed in lbs\n"
+  ) +
+  hwk_theme 
+```
+As above initial plotting was misleading as it took into account a higher number of respondents for females and compared grand totals. Therefore this simple plot shows the mean values and weight carried for genders and they fall into expectations. The higher body weight of males probably accounts for a marginal increase in the mean of the backpacks carried.
+
+Taking into account the ratio and using a scatter plot
+```{r}
+backpack %>%
+  clean_names()  %>%
+  filter(!is.na(sex) & !is.na(backpack_weight) & !is.na(body_weight)) %>% 
+  select(sex, backpack_weight, body_weight, ratio) %>%
+  ggplot(aes(x = body_weight, y = ratio, fill = sex), width =4) +
+  geom_col() +
+    labs(
+    x        = "\nBody weight ",
+    y        = "Backpack weight / bodyweight ratio",
+    title    = "Backpack weight versus body weight ratio for student backpacks",
+    subtitle = "Weight expressed in lbs\n"
+  ) +
+  hwk_theme 
+```
+AS above this suggests that the ratio of body weight to backpack weight is higher for females as they have smaller body weights and carry nearly the same backpack weight as males.
+
+## Question 6.
+
+What proportion of students report back pain?
+
+```{r}
+backpack_health <- backpack %>%
+  clean_names()  %>%
+  select(back_problems) %>%
+  group_by(back_problems) %>%
+  count()  
+backpack_health
+```
+
+
+```{r}
+backpack_health %>%
+  ggplot(aes(x = factor(back_problems), y = factor(n), fill = back_problems)) +
+  geom_col() +
+    labs(
+    x        = "\nback problems",
+    y        = "students",
+    title    = "Proportion of students with and without back problems",
+    subtitle = "0 = no back problems and 1 = back problems"
+  ) +
+  hwk_theme
+```
+Roughly a third of students reported back problems. This would seem a very high figure. 
+
+However, there is no definition of 'back problems' and, therefore, it may be that a stiff back once a term is equated to regular back pain and loss of sleep etc.
+
+
+# Question 7.
+
+Is this proportion different between men and women?
+```{r}
+backpack_health <- backpack %>%
+  clean_names()  %>%
+  select(back_problems, sex) %>%
+  mutate(back_problems = case_when(back_problems == 0 ~ "No problems",
+                                   TRUE ~ "Back Problems")) %>%
+  group_by(back_problems, sex) %>%
+  count()  
+backpack_health
+```
+
+```{r}
+backpack_health %>%
+  ggplot(aes(x = factor(back_problems), y = factor(n), fill = factor(sex))) +
+  geom_bar(position = "stack", stat = "identity") +
+    labs(
+    x        = "\nback problems",
+    y        = "students",
+    title    = "Proportion of students with and without back problems by gender"
+  ) +
+  hwk_theme
+```
+This suggests that the majority, two thirds, of individuals with reported back problems are female. This may relate to the high ratio of body weight to back pack weight, but this is speculation even though grounded on reasonable assumptions.
+
+## Question 8
+Now you’ve investigated your data separately, create plots to describe the relationship between backpack weight, body weight, gender and reported backpain.
+Try both backpack_weight and body_weight as well as the ratio.
+
+Hint: faceting would be useful here.
+
+```{r}
+backpack_health <- backpack %>%
+  clean_names()  %>%
+  select(back_problems, backpack_weight, body_weight, sex,ratio) %>%
+  mutate(back_problems = case_when(back_problems == 0 ~ "No problems",
+                                   TRUE ~ "Back Problems")) 
+backpack_health
+```
+
+```{r}
+
+p <-  backpack_health %>% 
+          ggplot( aes(  x = body_weight, 
+                        y = backpack_weight,
+                        size = ratio, 
+                        fill = sex)) +
+  geom_point() +
+  theme_bw() 
+
+ggplotly(p)
+```
+
+This interactive plotly graph shows the relationships between body_weight, backpack_weight, the resultant ratio and sex. 
+
+It confirms what has been described previously but allows individual point examination by hovering over the points and we, therefore, see low body weights for females wih probable low muscle mass carrying large backpack weights. 
+
+
